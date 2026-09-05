@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "uptime2",
 	version: "1.0.0",
 	hasPermssion: 1,
-	credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭",
+	credits: "𝐄𝐌𝐌𝐀 𝐎𝐋𝐈𝐕𝐈𝐀",
   hide: true,
 	description: "Random images by api - uptime",
 	commandCategory: "administrators",
