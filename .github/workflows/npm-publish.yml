@@ -1,30 +1,25 @@
-‎name: Run Bot on: Munii-bot push: branches: main jobs: run-bot: runs-on: ubuntu-latest steps: name: Checkout code uses: actions/checkou name: Setup Node.js uses: actions/setup-r with: node-version: '20' name: Install depende run : npm install name: Run the bot run: node index.js X
-‎
-‎
-‎
-‎name: Run Bot
-‎
-‎on:
-‎  push:
-‎    branches:
-‎      - main
-‎
-‎jobs:
-‎  run-bot:
-‎    runs-on: ubuntu-latest
-‎
-‎    steps:
-‎      - name: Checkout code
-‎        uses: actions/checkout@v4
-‎
-‎      - name: Setup Node.js
-‎        uses: actions/setup-node@v4
-‎        with:
-‎          node-version: '20'
-‎
-‎      - name: Install dependencies
-‎        run: npm install
-‎
-‎      - name: Run the bot
-‎        run: node index.js
-‎
+name: Run Bot - Munii-bot
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout
+
+      - name: Setup Node.js
+        uses: actions/setup-node
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run the bot
+        run: node index.js
