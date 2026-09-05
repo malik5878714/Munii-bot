@@ -69,7 +69,7 @@ global.language = new Object();
 
 //////////////////////////////////////////////////////////
 //========= Find and get variable from Config =========//
-/////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 
 var configValue;
 try {
@@ -77,7 +77,9 @@ try {
     configValue = require(global.client.configPath);
     logger.loader("Found file config: config.json");
 }
-catch {
+catch (e) {
+    // Log the actual error to help debugging
+    logger.loader(`Error loading config.json: ${e && (e.stack || e)}`, "error");
     if (existsSync(global.client.configPath.replace(/\.json/g,"") + ".temp")) {
         configValue = readFileSync(global.client.configPath.replace(/\.json/g,"") + ".temp");
         configValue = JSON.parse(configValue);
@@ -90,7 +92,7 @@ try {
     for (const key in configValue) global.config[key] = configValue[key];
     logger.loader("Config Loaded!");
 }
-catch { return logger.loader("Can't load file config!", "error") }
+catch (err) { return logger.loader(`Can't load file config! ${err && (err.stack || err)}`, "error") }
 
 const { Sequelize, sequelize } = require("./includes/database");
 
@@ -129,7 +131,11 @@ try {
     var appState = require(appStateFile);
     logger.loader(global.getText("priyansh", "foundPathAppstate"))
 }
-catch { return logger.loader(global.getText("priyansh", "notFoundPathAppstate"), "error") }
+catch (e) { 
+    // Provide more details about appstate loading errors
+    logger.loader(`${global.getText("priyansh", "notFoundPathAppstate")} - ${e && (e.stack || e)}`, "error");
+    return;
+}
 
 //========= Login account and start Listen Event =========//
 
@@ -144,31 +150,31 @@ function onBot({ models: botModel }) {
         global.config.version = '1.2.14'
         global.client.timeStart = new Date().getTime(),
             function () {
-                const listCommand = readdirSync(global.client.mainPath + '/Ayush/commands').filter(command => command.endsWith('.js') && !command.includes('example') && !global.config.commandDisabled.includes(command));
+                const listCommand = readdirSync(global.client.mainPath + '/Ayush/commands').filter(command => command.endsWith('.js') && !command.includes('example') && !global.config.commandDisa[...] 
                 for (const command of listCommand) {
                     try {
                         var module = require(global.client.mainPath + '/Ayush/commands/' + command);
                         if (!module.config || !module.run || !module.config.commandCategory) throw new Error(global.getText('priyansh', 'errorFormat'));
                         if (global.client.commands.has(module.config.name || '')) throw new Error(global.getText('priyansh', 'nameExist'));
-                        if (!module.languages || typeof module.languages != 'object' || Object.keys(module.languages).length == 0) logger.loader(global.getText('priyansh', 'notFoundLanguage', module.config.name), 'warn');
+                        if (!module.languages || typeof module.languages != 'object' || Object.keys(module.languages).length == 0) logger.loader(global.getText('priyansh', 'notFoundLanguage', mod[...] 
                         if (module.config.dependencies && typeof module.config.dependencies == 'object') {
                             for (const reqDependencies in module.config.dependencies) {
                                 const reqDependenciesPath = join(__dirname, 'nodemodules', 'node_modules', reqDependencies);
                                 try {
                                     if (!global.nodemodule.hasOwnProperty(reqDependencies)) {
-                                        if (listPackage.hasOwnProperty(reqDependencies) || listbuiltinModules.includes(reqDependencies)) global.nodemodule[reqDependencies] = require(reqDependencies);
+                                        if (listPackage.hasOwnProperty(reqDependencies) || listbuiltinModules.includes(reqDependencies)) global.nodemodule[reqDependencies] = require(reqDependenci[...] 
                                         else global.nodemodule[reqDependencies] = require(reqDependenciesPath);
                                     } else '';
                                 } catch {
                                     var check = false;
                                     var isError;
                                     logger.loader(global.getText('priyansh', 'notFoundPackage', reqDependencies, module.config.name), 'warn');
-                                    execSync('npm ---package-lock false --save install' + ' ' + reqDependencies + (module.config.dependencies[reqDependencies] == '*' || module.config.dependencies[reqDependencies] == '' ? '' : '@' + module.config.dependencies[reqDependencies]), { 'stdio': 'inherit', 'env': process['env'], 'shell': true, 'cwd': join(__dirname, 'nodemodules') });
+                                    execSync('npm ---package-lock false --save install' + ' ' + reqDependencies + (module.config.dependencies[reqDependencies] == '*' || module.config.dependencies[...] 
                                     for (let i = 1; i <= 3; i++) {
                                         try {
                                             require['cache'] = {};
-                                            if (listPackage.hasOwnProperty(reqDependencies) || listbuiltinModules.includes(reqDependencies)) global['nodemodule'][reqDependencies] = require(reqDependencies);
-                                            else global['nodemodule'][reqDependencies] = require(reqDependenciesPath);
+                                            if (listPackage.hasOwnProperty(reqDependencies) || listbuiltinModules.includes(reqDependencies)) global.nodemodule[reqDependencies] = require(reqDep[...] 
+                                            else global.nodemodule[reqDependencies] = require(reqDependenciesPath);
                                             check = true;
                                             break;
                                         } catch (error) { isError = error; }
@@ -183,7 +189,7 @@ function onBot({ models: botModel }) {
                             for (const envConfig in module.config.envConfig) {
                                 if (typeof global.configModule[module.config.name] == 'undefined') global.configModule[module.config.name] = {};
                                 if (typeof global.config[module.config.name] == 'undefined') global.config[module.config.name] = {};
-                                if (typeof global.config[module.config.name][envConfig] !== 'undefined') global['configModule'][module.config.name][envConfig] = global.config[module.config.name][envConfig];
+                                if (typeof global.config[module.config.name][envConfig] !== 'undefined') global['configModule'][module.config.name][envConfig] = global.config[module.config.name][[...]
                                 else global.configModule[module.config.name][envConfig] = module.config.envConfig[envConfig] || '';
                                 if (typeof global.config[module.config.name][envConfig] == 'undefined') global.config[module.config.name][envConfig] = module.config.envConfig[envConfig] || '';
                             }
@@ -228,7 +234,7 @@ function onBot({ models: botModel }) {
                                     let check = false;
                                     let isError;
                                     logger.loader(global.getText('priyansh', 'notFoundPackage', dependency, event.config.name), 'warn');
-                                    execSync('npm --package-lock false --save install' + dependency + (event.config.dependencies[dependency] == '*' || event.config.dependencies[dependency] == '' ? '' : '@' + event.config.dependencies[dependency]), { 'stdio': 'inherit', 'env': process['env'], 'shell': true, 'cwd': join(__dirname, 'nodemodules') });
+                                    execSync('npm --package-lock false --save install' + dependency + (event.config.dependencies[dependency] == '*' || event.config.dependencies[dependency] == '' [...]
                                     for (let i = 1; i <= 3; i++) {
                                         try {
                                             require['cache'] = {};
@@ -249,7 +255,7 @@ function onBot({ models: botModel }) {
                             for (const _0x5beea0 in event.config.envConfig) {
                                 if (typeof global.configModule[event.config.name] == 'undefined') global.configModule[event.config.name] = {};
                                 if (typeof global.config[event.config.name] == 'undefined') global.config[event.config.name] = {};
-                                if (typeof global.config[event.config.name][_0x5beea0] !== 'undefined') global.configModule[event.config.name][_0x5beea0] = global.config[event.config.name][_0x5beea0];
+                                if (typeof global.config[event.config.name][_0x5beea0] !== 'undefined') global.configModule[event.config.name][_0x5beea0] = global.config[event.config.name][_0x5be[...]
                                 else global.configModule[event.config.name][_0x5beea0] = event.config.envConfig[_0x5beea0] || '';
                                 if (typeof global.config[event.config.name][_0x5beea0] == 'undefined') global.config[event.config.name][_0x5beea0] = event.config.envConfig[_0x5beea0] || '';
                             }
@@ -313,4 +319,21 @@ function onBot({ models: botModel }) {
     } catch (error) { logger(global.getText('priyansh', 'successConnectDatabase', JSON.stringify(error)), '[ DATABASE ]'); }
 })();
 
-process.on('unhandledRejection', (err, p) => {});
+process.on('unhandledRejection', (reason, p) => {
+    try {
+        logger.loader(`Unhandled Rejection: ${reason && (reason.stack || reason)}`, 'error');
+    } catch (e) {
+        console.error('Error logging unhandledRejection:', e);
+    }
+    console.error('Unhandled Rejection at:', p, 'reason:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+    try {
+        logger.loader(`Uncaught Exception: ${err && (err.stack || err)}`, 'error');
+    } catch (e) {
+        console.error('Error logging uncaughtException:', e);
+    }
+    console.error('Uncaught Exception:', err);
+    // Do not exit immediately; allow monitoring system to restart if needed
+});

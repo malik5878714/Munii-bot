@@ -17,6 +17,11 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, '/index.html'));
 });
 
+// Health endpoint for uptime monitors
+app.get('/status', function (req, res) {
+    res.json({ status: 'ok', uptime: process.uptime(), restarts: global.countRestart || 0 });
+});
+
 // Start the server and add error handling
 app.listen(port, () => {
     logger(`Server is running on port ${port}...`, "[ MirryKal ]");
@@ -44,10 +49,12 @@ function startBot(message) {
     });
 
     child.on("close", (codeExit) => {
-        if (codeExit !== 0 && global.countRestart < 5) {
+        // If exit code is not zero try to restart with exponential backoff (capped)
+        if (codeExit !== 0 && global.countRestart < 10) {
             global.countRestart++;
-            logger(`Bot exited with code ${codeExit}. Restarting... (${global.countRestart}/5)`, "[ Ayush ]");
-            startBot();
+            const delay = Math.min(30000, 1000 * Math.pow(2, global.countRestart)); // cap at 30s
+            logger(`Bot exited with code ${codeExit}. Restarting in ${delay / 1000}s... (${global.countRestart}/10)`, "[ Ayush ]");
+            setTimeout(() => startBot(), delay);
         } else {
             logger(`Bot stopped after ${global.countRestart} restarts.`, "[ MirrKal]");
         }
@@ -58,9 +65,9 @@ function startBot(message) {
     });
 }
 
-////////////////////////////////////////////////
+//////////////////////////////////////////////
 //========= Check update from GitHub =========//
-////////////////////////////////////////////////
+//////////////////////////////////////////////
 
 axios.get("https://raw.githubusercontent.com/priyanshu192/bot/main/package.json")
     .then((res) => {
