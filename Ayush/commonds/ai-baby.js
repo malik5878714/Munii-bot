@@ -1,10 +1,10 @@
 const axios = require("axios");
 
 module.exports.config = {
-    name: "silly",
+    name: "Zarlish",
     version: "1.0.9",
     hasPermssion: 0,
-    credits: "Ml𝐄𝐌𝐌𝐀 𝐎𝐋𝐈𝐕𝐈𝐀",
+    credits: "𝐄𝐌𝐌𝐀 𝐎𝐋𝐈𝐕𝐈𝐀",
     description: "Gemini AI - Intelligent assistant",
     commandCategory: "ai",
     usages: "[ask/on/off]",
